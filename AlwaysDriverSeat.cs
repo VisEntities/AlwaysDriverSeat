@@ -114,7 +114,7 @@ namespace Oxide.Plugins
 
         #endregion Oxide Hooks
 
-        #region Driver Seat
+        #region Helper Functions
 
         private (BaseVehicle.MountPointInfo, int) GetDriverSeat(BaseVehicle vehicle)
         {
@@ -133,6 +133,6 @@ namespace Oxide.Plugins
             return (null, -1);
         }
 
-        #endregion Driver Seat
+        #endregion Helper Functions
     }
 }
