@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Oxide.Plugins
 {
     [Info("Always Driver Seat", "VisEntities", "1.0.0")]
-    [Description("Automatically moves players to the driver seat when they mount certain vehicles.")]
+    [Description("Forces players into the driver's seat when they mount certain vehicles.")]
     public class AlwaysDriverSeat : RustPlugin
     {
         #region Fields
@@ -114,7 +114,7 @@ namespace Oxide.Plugins
 
         #endregion Oxide Hooks
 
-        #region Helper Functions
+        #region Driver Seat Retrieval
 
         private (BaseVehicle.MountPointInfo, int) GetDriverSeat(BaseVehicle vehicle)
         {
@@ -133,6 +133,6 @@ namespace Oxide.Plugins
             return (null, -1);
         }
 
-        #endregion Helper Functions
+        #endregion Driver Seat Retrieval
     }
 }
