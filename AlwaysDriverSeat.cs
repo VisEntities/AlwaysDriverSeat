@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Oxide.Plugins
 {
-    [Info("Always Driver Seat", "VisEntities", "1.1.0")]
+    [Info("Always Driver Seat", "VisEntities", "1.1.1")]
     [Description("Forces players into the driver's seat when they mount certain vehicles.")]
     public class AlwaysDriverSeat : RustPlugin
     {
@@ -17,6 +17,7 @@ namespace Oxide.Plugins
 
         private static AlwaysDriverSeat _plugin;
         private static Configuration _config;
+        private Dictionary<ulong, BaseVehicle> _playersAndTheirCurrentVehicles = new Dictionary<ulong, BaseVehicle>();
 
         #endregion Fields
 
@@ -109,6 +110,11 @@ namespace Oxide.Plugins
             if (vehicle == null)
                 return;
 
+            if (_playersAndTheirCurrentVehicles.TryGetValue(player.userID, out BaseVehicle lastVehicle) && lastVehicle == vehicle)
+                return;
+
+            _playersAndTheirCurrentVehicles[player.userID] = vehicle;
+
             if (vehicle.IsDriver(player))
                 return;
 
@@ -120,6 +126,30 @@ namespace Oxide.Plugins
                 return;
 
             driverSeat.mountable.MountPlayer(player);
+        }
+
+        private void OnEntityDismounted(BaseMountable mountable, BasePlayer player)
+        {
+            if (player == null || mountable == null)
+                return;
+
+            timer.Once(0.5f, () =>
+            {
+                if (player == null || mountable == null)
+                    return;
+
+                if (_playersAndTheirCurrentVehicles.ContainsKey(player.userID))
+                {
+                    BaseMountable mountedEntity = player.GetMounted();
+                    BaseVehicle currentVehicle = null;
+
+                    if (mountedEntity != null)
+                        currentVehicle = mountable.GetParentEntity() as BaseVehicle;
+
+                    if (currentVehicle == null || currentVehicle != _playersAndTheirCurrentVehicles[player.userID])
+                        _playersAndTheirCurrentVehicles.Remove(player.userID);
+                }
+            });
         }
 
         #endregion Oxide Hooks
